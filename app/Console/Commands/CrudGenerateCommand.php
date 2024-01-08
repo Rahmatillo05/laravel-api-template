@@ -221,7 +221,7 @@ class CrudGenerateCommand extends Command
                 '',
                 $relations,
             ],
-            $this->getStub('Model')
+            $this->getStub('CrudModel')
         );
 
         if (! empty($this->module) && $this->module !== 'no') {
