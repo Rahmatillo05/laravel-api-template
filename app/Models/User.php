@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
+
+/**
+ * This is the model class for table "users".
+ */
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    const ROLE_ADMIN = 'admin';
+
+    const ROLE_USER = 'user';
+
+    const STATUS_ACTIVE = 1;
+
+    const STATUS_INACTIVE = 0;
+
+    const STATUS_CREATING_PASSWORD = 3;
+
+    const STATUS_WAIT_VERIFICATION = 2;
+
+    protected $table = 'users';
+
+    protected $fillable = [
+        'updated_at',
+        'email_verified_at',
+        'created_at',
+        'id',
+        'remember_token',
+        'password',
+        'username',
+        'phone',
+        'email',
+        'status',
+    ];
+
+
+}
