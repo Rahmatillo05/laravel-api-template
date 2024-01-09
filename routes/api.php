@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function (Request $request) {
-    return $request->json('message', 'Welcome!');
+Route::get('/', function () {
+    return okResponse('Welcome to API');
 });
 Route::get('sms-log', function (Request $request) {
     SmsLog::create([
