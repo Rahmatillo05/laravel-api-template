@@ -1,0 +1,139 @@
+<?php
+
+namespace App\Http\Controllers\Api\v1;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Http\Requests\Organization\StoreOrganizationRequest;
+use App\Http\Requests\Organization\UpdateOrganizationRequest;
+use App\Http\Interfaces\OrganizationInterface;
+use Illuminate\Http\JsonResponse;
+use App\Models\Organization;
+use App\Http\Resources\DefaultResource;
+use Illuminate\Support\Facades\Auth;
+
+/**
+ * @group Organization
+ *
+ */
+class OrganizationController extends Controller
+{
+
+    public function __construct(public OrganizationInterface $organizationRepository)
+    {
+    }
+
+    /**
+    * Organization Get all
+    *
+    * @response {
+    *  "id": "integer",
+     *  "status": "integer",
+     *  "created_at": "date",
+     *  "updated_at": "date",
+     *  "name": "string",
+    * }
+    * @return JsonResponse
+    */
+
+    public function index(Request $request)
+    {
+        return $this->organizationRepository->index($request);
+    }
+
+    /**
+    * Organization adminIndex get All
+    *
+    * @response {
+    *  "id": "integer",
+     *  "status": "integer",
+     *  "created_at": "date",
+     *  "updated_at": "date",
+     *  "name": "string",
+    * }
+    * @return JsonResponse
+    */
+
+    public function adminIndex(Request $request)
+    {
+        return $this->organizationRepository->adminIndex($request);
+    }
+
+    /**
+    * Organization view
+    *
+    * @queryParam id required
+    *
+    * @param Request $request
+    * @param int     $id
+    * @return JsonResponse
+    * @response {
+    *  "id": "integer",
+     *  "status": "integer",
+     *  "created_at": "date",
+     *  "updated_at": "date",
+     *  "name": "string",
+    * }
+    */
+
+    public function show(Request $request, int $id): JsonResponse
+    {
+        return $this->organizationRepository->show($request, $id);
+    }
+
+    /**
+    * Organization create
+    *
+         * @bodyParam status integer
+     * @bodyParam name string
+
+    *
+    * @param StoreOrganizationRequest $request
+    * @return JsonResponse
+    */
+
+    public function store(StoreOrganizationRequest $request): JsonResponse
+    {
+        return $this->organizationRepository->store($request);
+    }
+
+    /**
+    * Organization update
+    *
+    * @queryParam organization required
+    *
+         * @bodyParam status integer
+     * @bodyParam name string
+
+    *
+    * @param UpdateOrganizationRequest $request
+    * @param Organization $organization
+    * @return JsonResponse
+    */
+
+    public function update(UpdateOrganizationRequest $request, Organization $organization): JsonResponse
+    {
+         return $this->organizationRepository->update($request, $organization);
+    }
+
+    /**
+     * Organization delete
+     *
+     * @queryParam organization required
+     *
+     * @param Organization $organization
+     * @return JsonResponse
+     */
+
+    public function destroy(Organization $organization): JsonResponse
+    {
+        return  $this->organizationRepository->destroy($organization);
+    }
+
+    public function myOrganization(Request $request)
+    {
+        $organization_id = Auth::user()->organization_id;
+
+        return $this->organizationRepository->show($request, $organization_id);
+    }
+}

@@ -16,7 +16,7 @@ class AuthRepository
     public function register(Request $request): JsonResponse
     {
         $model = User::create([
-            'phone' => $request->phone,
+            'phone' => $this->sanitizePhone($request->phone),
             'status' => User::STATUS_WAIT_VERIFICATION,
         ]);
         Role::create([
@@ -97,7 +97,8 @@ class AuthRepository
 
     public function login(Request $request): JsonResponse
     {
-        if (Auth::attempt(['phone' => $request->get('phone'), 'password' => $request->get('password')])) {
+        $phone = $this->sanitizePhone($request->get('phone'));
+        if (Auth::attempt(['phone' => $phone, 'password' => $request->get('password')])) {
             $user = Auth::user();
             if (!$user->role) {
                 Role::create([
@@ -134,5 +135,10 @@ class AuthRepository
             return errorResponse('You have unused code');
         }
 
+    }
+
+    public function sanitizePhone($phone): array|string|null
+    {
+        return preg_replace('/[^0-9]/', '', $phone);
     }
 }

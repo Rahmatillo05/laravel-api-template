@@ -28,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         Passport::tokensCan([
             User::ROLE_USER => 'User',
             User::ROLE_ADMIN => 'Admin',
+            User::ROLE_ORGANIZATION => 'Organization',
         ]);
 
         Passport::setDefaultScope([

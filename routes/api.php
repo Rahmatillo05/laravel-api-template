@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\v1\OrganizationController;
 use App\Models\SmsLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +38,9 @@ Route::prefix('auth')->group(function () {
 
 Route::prefix('user')->middleware('auth:api')->group(function () {
     Route::get('/profile', [UserController::class, 'profile']);
+});
+
+Route::prefix('organizations')->middleware('auth:api')->group(function () {
+    Route::post('/', [OrganizationController::class, 'store']);
+    Route::get('/my-organization', [OrganizationController::class, 'myOrganization'])->middleware(['auth:api', 'scope:' . User::ROLE_ORGANIZATION]);
 });

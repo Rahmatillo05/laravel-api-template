@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -42,6 +43,7 @@ class User extends Authenticatable
         'phone',
         'email',
         'status',
+        'organization_id',
     ];
     protected $appends = [
         'role'
@@ -55,5 +57,10 @@ class User extends Authenticatable
     public function roles(): HasMany
     {
         return $this->hasMany(Role::class, 'user_id', 'id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
 }
