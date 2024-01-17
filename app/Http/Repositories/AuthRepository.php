@@ -4,6 +4,7 @@ namespace App\Http\Repositories;
 
 use App\Http\Services\SmsService;
 use App\Models\ConfirmCode;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,10 @@ class AuthRepository
             'phone' => $request->phone,
             'status' => User::STATUS_WAIT_VERIFICATION,
         ]);
-
+        Role::create([
+            'user_id' => $model->id,
+            'role' => User::ROLE_USER
+        ]);
         return okResponse([
             'user' => $model,
             'key' => $this->sendCode($model),
@@ -95,8 +99,13 @@ class AuthRepository
     {
         if (Auth::attempt(['phone' => $request->get('phone'), 'password' => $request->get('password')])) {
             $user = Auth::user();
-            $token = $user->createToken($user->phone, [User::ROLE_USER])->accessToken;
-
+            if (!$user->role) {
+                Role::create([
+                    'user_id' => $user->id,
+                    'role' => User::ROLE_USER
+                ]);
+            }
+            $token = $user->createToken($user->phone, [$user->role])->accessToken;
             return okResponse([
                 'user' => $user,
                 'token' => $token,
