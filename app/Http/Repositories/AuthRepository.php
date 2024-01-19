@@ -15,6 +15,25 @@ class AuthRepository
 {
     public function register(Request $request): JsonResponse
     {
+        $model = User::where('phone', $this->sanitizePhone($request->phone))
+            ->first();
+        if ($model instanceof User) {
+            if (in_array($model->status, [User::STATUS_WAIT_VERIFICATION, User::STATUS_CREATING_PASSWORD])) {
+                $model->confirm_codes()->orderBy('id', 'desc')->first()->update([
+                    'is_used' => true,
+                ]);
+                return okResponse([
+                    'user' => $model,
+                    'key' => $this->sendCode($model),
+                ]);
+            } else if ($model->status === User::STATUS_ACTIVE) {
+                return okResponse([
+                    'user' => $model,
+                ]);
+            } else {
+                return errorResponse('This user is blocked');
+            }
+        }
         $model = User::create([
             'phone' => $this->sanitizePhone($request->phone),
             'status' => User::STATUS_WAIT_VERIFICATION,

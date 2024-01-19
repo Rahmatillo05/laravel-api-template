@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
+
+    public function confirm_codes(): HasMany
+    {
+        return $this->hasMany(ConfirmCode::class, 'user_id', 'id');
+    }
 }

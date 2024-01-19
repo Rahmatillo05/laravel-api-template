@@ -52,7 +52,7 @@ class OrganizationRepository extends BaseRepository implements OrganizationInter
             $user->update([
                 'organization_id' => $model->id
             ]);
-            $user->roles()->update([
+            $user->roles()->first()->update([
                 'role' => User::ROLE_ORGANIZATION
             ]);
         }

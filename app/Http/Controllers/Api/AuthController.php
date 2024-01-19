@@ -24,7 +24,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'phone' => 'required|unique:users,phone|min:12|max:12',
+            'phone' => 'required|min:12|max:12',
         ]);
         return $this->authRepository->register($request);
     }
