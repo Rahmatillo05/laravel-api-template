@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Providers\Pages\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -26,7 +27,7 @@ class OrganizationPanelProvider extends PanelProvider
             ->default()
             ->id('organization')
             ->path('organization')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
