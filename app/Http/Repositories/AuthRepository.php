@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use function dd;
+use function okResponse;
 
 class AuthRepository
 {
@@ -63,14 +65,15 @@ class AuthRepository
             'user_id' => $user->id,
             'expires_at' => now()->addMinutes(3),
         ]);
-        $text = "Your verification code is: {$code}";
         if ($user->phone == '998999999900') {
             return [
-                'key' => $key,
-                'code' => $code
+                'key' => $confirmCode->key,
+                'code' => $confirmCode->code
             ];
+        } else{
+            $text = "Your verification code is: {$code}";
+            SmsService::sendSms($user->phone, $text);
         }
-        SmsService::sendSms($user->phone, $text);
 
         return $confirmCode->key;
     }
@@ -148,21 +151,16 @@ class AuthRepository
 
     public function resendCode(Request $request): JsonResponse
     {
-        $confirmCode = ConfirmCode::where('key', $request->key)
-            ->where('is_used', false)
-            ->where('expires_at', '<', now())
-            ->orderBy('created_at', 'desc')
-            ->first();
+        $confirmCode = ConfirmCode::where('key', $request->key)->first();
         if ($confirmCode instanceof ConfirmCode) {
             $confirmCode->update([
                 'is_used' => true,
             ]);
-
             return okResponse([
                 'key' => $this->sendCode($confirmCode->user),
             ]);
-        } else {
-            return errorResponse('You have unused code');
+        } else{
+            return errorResponse('Invalid key');
         }
 
     }
@@ -177,6 +175,7 @@ class AuthRepository
         if (!$user){
             $user = User::create([
                'phone' => '998999999900',
+                'status' => User::STATUS_WAIT_VERIFICATION
             ]);
             Role::create([
                 'user_id' => $user->id,
@@ -188,24 +187,24 @@ class AuthRepository
                 'key' => $key['key'],
                 'code' => $key['code'],
             ]);
-        }
-
-        if (in_array($user->status, [User::STATUS_WAIT_VERIFICATION, User::STATUS_CREATING_PASSWORD])) {
-            $key = $this->sendCode($user);
-            $user->confirm_codes()->orderBy('id', 'desc')->first()->update([
-                'is_used' => true,
-            ]);
-            return okResponse([
-                'user' => $user,
-                'key' => $key['key'],
-                'code' => $key['code'],
-            ]);
-        } else if ($user->status === User::STATUS_ACTIVE) {
-            return okResponse([
-                'user' => $user,
-            ]);
-        } else {
-            return errorResponse('This user is blocked');
+        } else{
+            if (in_array($user->status, [User::STATUS_WAIT_VERIFICATION, User::STATUS_CREATING_PASSWORD])) {
+                $user->confirm_codes()->orderBy('id', 'desc')->first()->update([
+                    'is_used' => true,
+                ]);
+                $key = $this->sendCode($user);
+                return okResponse([
+                    'user' => $user,
+                    'key' => $key['key'],
+                    'code' => $key['code'],
+                ]);
+            } else if ($user->status === User::STATUS_ACTIVE) {
+                return okResponse([
+                    'user' => $user,
+                ]);
+            } else {
+                return errorResponse('This user is blocked');
+            }
         }
     }
 }
