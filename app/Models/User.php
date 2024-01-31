@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ConfirmCode::class, 'user_id', 'id');
     }
+
+    public function getNameAttribute(): string
+    {
+        return $this->phone;
+    }
 }
