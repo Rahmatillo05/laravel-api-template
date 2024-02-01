@@ -21,7 +21,7 @@ use function session;
 
 class Login extends \Filament\Pages\Auth\Login
 {
-    public static ?string $title = 'Sign in to your account';
+    public static ?string $title = 'Akkauntga kirish';
 
 //    public static string $view = 'app.pages.login';
     protected ?string $heading = 'Akkauntga kirish';

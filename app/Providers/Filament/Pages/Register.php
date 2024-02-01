@@ -11,10 +11,13 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules\Unique;
 use function __;
 use function app;
 use function array_key_exists;
@@ -31,25 +34,9 @@ class Register extends \Filament\Pages\Auth\Register
         return $form
             ->schema(
                 [
-                   TextInput::make('phone')
-                        ->autofocus()
-                        ->required()
-                       ->rule('unique:users,phone', 'phone')
-                        ->placeholder('Telefon raqam')
-                        ->label('Telefon raqam')
-                        ->mask('99 999-9999'),
-                    TextInput::make('password')
-                        ->autofocus()
-                        ->required()
-                        ->placeholder('Parol yaratish')
-                        ->label('Parol yaratish')
-                        ->type('password'),
-                    TextInput::make('password_confirmation')
-                        ->autofocus()
-                        ->required()
-                        ->placeholder('Parolni tasdiqlash')
-                        ->label('Parolni tasdiqlash')
-                        ->type('password'),
+                    $this->getPhoneComponent(),
+                    $this->getPasswordFormComponent(),
+                    $this->getPasswordConfirmationFormComponent(),
                 ]
             );
     }
@@ -70,7 +57,6 @@ class Register extends \Filament\Pages\Auth\Register
                 Wizard\Step::make('SMS Tasdiqlash')
                     ->schema([
                         TextInput::make('code')
-                            ->autofocus()
                             ->required()
                             ->placeholder('SMS Tasdiqlash')
                             ->label('SMS Tasdiqlash')
@@ -79,13 +65,11 @@ class Register extends \Filament\Pages\Auth\Register
                 Wizard\Step::make('Parol yaratish')
                     ->schema([
                         TextInput::make('password')
-                            ->autofocus()
                             ->required()
                             ->placeholder('Parol yaratish')
                             ->label('Parol yaratish')
                             ->type('password'),
                         TextInput::make('password_confirmation')
-                            ->autofocus()
                             ->required()
                             ->placeholder('Parolni tasdiqlash')
                             ->label('Parolni tasdiqlash')
@@ -111,7 +95,7 @@ class Register extends \Filament\Pages\Auth\Register
     public function register(): ?RegistrationResponse
     {
         try {
-            $this->rateLimit(2);
+            $this->rateLimit(5);
         } catch (TooManyRequestsException $exception) {
             Notification::make()
                 ->title(__('filament-panels::pages/auth/register.notifications.throttled.title', [
@@ -131,6 +115,7 @@ class Register extends \Filament\Pages\Auth\Register
         $data = $this->form->getState();
         $data['password'] = Hash::make($data['password']);
         $data['phone'] = (new AuthRepository())->sanitizePhone($data['phone']);
+
         $user = User::create($data);
 
         Filament::auth()->login($user);
@@ -139,5 +124,19 @@ class Register extends \Filament\Pages\Auth\Register
 
         return app(RegistrationResponse::class);
     }
+
+    private function getPhoneComponent()
+    {
+        return TextInput::make('phone')
+            ->autofocus()
+            ->required()
+            ->placeholder('Telefon raqam')
+            ->label('Telefon raqam')
+            ->maxLength(9)
+            ->integer()
+            ->unique('users', 'phone')
+            ->prefix('+998');
+    }
+
 
 }

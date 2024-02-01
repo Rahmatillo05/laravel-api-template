@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\Filament\OrganizationPanelProvider;
+
 return [
 
     /*
@@ -72,10 +74,14 @@ return [
     'livewire_loading_delay' => 'default',
 
     'auth' => [
-        'guards' => 'web',
-        'pages' => [
-            'login' => \App\Providers\Filament\Pages\Login::class,
-            'register' => \App\Providers\Filament\Pages\Register::class,
-        ]
+        'organization' => [
+            'model' => App\Models\User::class,
+            'resource' => OrganizationPanelProvider::class,
+            'login_url' => '/organization/login',
+            'registration_url' => '/organization/register',
+            'redirect_url' => '/organization',
+            'guard' => 'filament',
+        ],
     ]
+
 ];

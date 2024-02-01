@@ -19,7 +19,7 @@ class AuthRepository
     {
         $model = User::where('phone', $this->sanitizePhone($request->phone))
             ->first();
-        if ($request->get('phone') == '998999999900'){
+        if ($request->get('phone') == '998999999900') {
             return $this->createTestUser($model);
         }
         if ($model instanceof User) {
@@ -70,7 +70,7 @@ class AuthRepository
                 'key' => $confirmCode->key,
                 'code' => $confirmCode->code
             ];
-        } else{
+        } else {
             $text = "Your verification code is: {$code}";
             SmsService::sendSms($user->phone, $text);
         }
@@ -159,7 +159,7 @@ class AuthRepository
             return okResponse([
                 'key' => $this->sendCode($confirmCode->user),
             ]);
-        } else{
+        } else {
             return errorResponse('Invalid key');
         }
 
@@ -167,14 +167,19 @@ class AuthRepository
 
     public function sanitizePhone($phone): array|string|null
     {
-        return preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($phone) == 9) {
+            $response = '998' . preg_replace('/[^0-9]/', '', $phone);
+        } else {
+            $response = preg_replace('/[^0-9]/', '', $phone);
+        }
+        return $response;
     }
 
     public function createTestUser(?User $user): JsonResponse
     {
-        if (!$user){
+        if (!$user) {
             $user = User::create([
-               'phone' => '998999999900',
+                'phone' => '998999999900',
                 'status' => User::STATUS_WAIT_VERIFICATION
             ]);
             Role::create([
@@ -187,7 +192,7 @@ class AuthRepository
                 'key' => $key['key'],
                 'code' => $key['code'],
             ]);
-        } else{
+        } else {
             if (in_array($user->status, [User::STATUS_WAIT_VERIFICATION, User::STATUS_CREATING_PASSWORD])) {
                 $user->confirm_codes()->orderBy('id', 'desc')->first()->update([
                     'is_used' => true,
