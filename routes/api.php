@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\v1\OrganizationController;
 use App\Models\SmsLog;
@@ -54,3 +55,6 @@ Route::prefix('organizations')
             Route::delete('/branches/{organization}', [OrganizationController::class, 'destroyBranch'])->whereNumber('organization');
         });
     });
+Route::prefix('countries')->group(function () {
+    Route::get('/', [CountryController::class, 'index']);
+});
