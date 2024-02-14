@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -17,6 +19,8 @@ class User extends Authenticatable
     const ROLE_ADMIN = 'admin';
 
     const ROLE_USER = 'user';
+
+    const ROLE_ORGANIZATION = 'organization';
 
     const STATUS_ACTIVE = 1;
 
@@ -39,7 +43,31 @@ class User extends Authenticatable
         'phone',
         'email',
         'status',
+        'organization_id',
     ];
+    protected $appends = [
+        'role'
+    ];
+
+    public function getRoleAttribute()
+    {
+        return $this->roles()->first()?->role ?? null;
+    }
+
+    public function roles(): HasMany
+    {
+        return $this->hasMany(Role::class, 'user_id', 'id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
+    }
+
+    public function confirm_codes(): HasMany
+    {
+        return $this->hasMany(ConfirmCode::class, 'user_id', 'id');
+    }
 
 
 }
