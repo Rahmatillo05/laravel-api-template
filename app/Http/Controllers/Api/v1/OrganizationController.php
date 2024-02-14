@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Organization\StoreOrganizationDetailRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\Organization\StoreOrganizationRequest;
 use App\Http\Requests\Organization\UpdateOrganizationRequest;
@@ -135,5 +136,30 @@ class OrganizationController extends Controller
         $organization_id = Auth::user()->organization_id;
 
         return $this->organizationRepository->show($request, $organization_id);
+    }
+
+    public function details(StoreOrganizationDetailRequest $request)
+    {
+        return $this->organizationRepository->detail($request);
+    }
+
+    public function branches(Request $request)
+    {
+        return $this->organizationRepository->adminIndex($request, true);
+    }
+
+    public function storeBranch(StoreOrganizationRequest $request)
+    {
+        return $this->organizationRepository->store($request, true);
+    }
+
+    public function updateBranch(UpdateOrganizationRequest $request, Organization $organization)
+    {
+        return $this->organizationRepository->update($request, $organization, true);
+    }
+
+    public function destroyBranch(Organization $organization)
+    {
+        return $this->organizationRepository->destroy($organization, true);
     }
 }

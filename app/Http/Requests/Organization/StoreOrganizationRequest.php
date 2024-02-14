@@ -26,6 +26,8 @@ class StoreOrganizationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ];
     }
 }

@@ -27,6 +27,8 @@ class UpdateOrganizationRequest extends FormRequest
         return [
             'name' => 'nullable|string|max:255',
             'status' => 'integer|min:0|max:1',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ];
     }
 }
