@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Interfaces\OrganizationInterface;
 use App\Http\Requests\Organization\StoreOrganizationDetailRequest;
-use Illuminate\Http\Request;
 use App\Http\Requests\Organization\StoreOrganizationRequest;
 use App\Http\Requests\Organization\UpdateOrganizationRequest;
-use App\Http\Interfaces\OrganizationInterface;
-use Illuminate\Http\JsonResponse;
 use App\Models\Organization;
-use App\Http\Resources\DefaultResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**

@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use function dd;
 use function okResponse;
 
 class AuthRepository
@@ -39,15 +38,16 @@ class AuthRepository
                 $response = errorResponse('This user is blocked');
             }
             return $response;
+        } else {
+            $model = User::create([
+                'phone' => $this->sanitizePhone($request->phone),
+                'status' => User::STATUS_WAIT_VERIFICATION,
+            ]);
+            Role::create([
+                'user_id' => $model->id,
+                'role' => User::ROLE_USER
+            ]);
         }
-        $model = User::create([
-            'phone' => $this->sanitizePhone($request->phone),
-            'status' => User::STATUS_WAIT_VERIFICATION,
-        ]);
-        Role::create([
-            'user_id' => $model->id,
-            'role' => User::ROLE_USER
-        ]);
 
         return okResponse([
             'user' => $model,
