@@ -6,14 +6,11 @@ namespace App\Http\Repositories;
 use App\Http\Interfaces\OrganizationInterface;
 use App\Http\Resources\DefaultResource;
 use App\Models\Organization;
-use App\Models\Role;
 use App\Models\User;
 use Auth;
 use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Repositories\BaseRepository;
-use Illuminate\Support\Str;
 
 class OrganizationRepository extends BaseRepository implements OrganizationInterface
 {

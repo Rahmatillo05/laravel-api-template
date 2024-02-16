@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CountryController;
+use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\v1\OrganizationController;
 use App\Models\SmsLog;
 use App\Models\User;
 use Illuminate\Http\Request;
